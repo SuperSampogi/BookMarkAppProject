@@ -1,41 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
+import FAB from '../components/FAB';
 import BookmarkCard from '../components/BookmarkCard';
-import CustomButton from '../components/CustomButton';
 import { getBookmarks, deleteBookmark } from '../utils/storage';
 
 const HomeScreen = ({ navigation }) => {
     const [bookmarks, setBookmarks] = useState([]);
 
     useEffect(() => {
-        loadBookmarks();
-    }, []);
+        const loadBookmarks = async () => {
+            const storedBookmarks = await getBookmarks();
+            setBookmarks(storedBookmarks);
+        };
 
-    const loadBookmarks = async () => {
-        const data = await getBookmarks();
-        setBookmarks(data);
-    };
+        const unsubscribe = navigation.addListener('focus', loadBookmarks);
+        return unsubscribe;
+    }, [navigation]);
 
     const handleDelete = async (id) => {
         await deleteBookmark(id);
-        loadBookmarks();
+        const updatedBookmarks = await getBookmarks();
+        setBookmarks(updatedBookmarks);
+    };
+
+    const addNewBookmark = async (newBookmark) => {
+        setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
     };
 
     return (
         <View style={styles.container}>
             <FlatList
                 data={bookmarks}
-                keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <BookmarkCard
-                        title={item.title}
-                        url={item.url}
-                        onEdit={() => navigation.navigate('Add Bookmark', { bookmark: item })}
-                        onDelete={() => handleDelete(item.id)}
+                        bookmark={item}
+                        onEdit={(id) => navigation.navigate('Add Bookmark', { bookmarkId: id })}
+                        onDelete={handleDelete}
                     />
                 )}
+                keyExtractor={(item) => item.id}
             />
-            <CustomButton title="Add Bookmark" onPress={() => navigation.navigate('Add Bookmark')} />
+            <FAB onPress={() => navigation.navigate('Add Bookmark', { addNewBookmark })} />
         </View>
     );
 };
@@ -43,8 +48,8 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#f4f4f4',
+        backgroundColor: '#f5f5f5',
+        padding: 15,
     },
 });
 

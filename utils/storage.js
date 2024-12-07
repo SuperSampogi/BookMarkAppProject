@@ -1,29 +1,47 @@
+// utils/storage.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import uuid from 'react-native-uuid';
 
-const BOOKMARKS_KEY = 'bookmarks';
+const STORAGE_KEY = '@bookmarks';
 
 export const getBookmarks = async () => {
-    const data = await AsyncStorage.getItem(BOOKMARKS_KEY);
-    return data ? JSON.parse(data) : [];
+    try {
+        const storedBookmarks = await AsyncStorage.getItem(STORAGE_KEY);
+        return storedBookmarks ? JSON.parse(storedBookmarks) : [];
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
 };
 
-export const addBookmark = async (bookmark) => {
-    const bookmarks = await getBookmarks();
-    const newBookmark = { ...bookmark, id: uuid.v4() };
-    await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...bookmarks, newBookmark]));
+export const saveBookmark = async (bookmark) => {
+    try {
+        const bookmarks = await getBookmarks();
+        bookmarks.push(bookmark);
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+    } catch (error) {
+        console.error(error);
+    }
 };
 
-export const updateBookmark = async (id, updatedBookmark) => {
-    const bookmarks = await getBookmarks();
-    const updatedBookmarks = bookmarks.map((item) =>
-        item.id === id ? { ...item, ...updatedBookmark } : item
-    );
-    await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify(updatedBookmarks));
+export const updateBookmark = async (updatedBookmark) => {
+    try {
+        const bookmarks = await getBookmarks();
+        const index = bookmarks.findIndex(b => b.id === updatedBookmark.id);
+        if (index !== -1) {
+            bookmarks[index] = updatedBookmark;
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+        }
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 export const deleteBookmark = async (id) => {
-    const bookmarks = await getBookmarks();
-    const filteredBookmarks = bookmarks.filter((item) => item.id !== id);
-    await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify(filteredBookmarks));
+    try {
+        const bookmarks = await getBookmarks();
+        const updatedBookmarks = bookmarks.filter(b => b.id !== id);
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedBookmarks));
+    } catch (error) {
+        console.error(error);
+    }
 };
