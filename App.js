@@ -10,9 +10,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
+        {/* Home Screen */}
         <Stack.Screen name="Home" component={HomeScreen} />
-        {/* Register the screen with the name "Add Bookmark" */}
-        <Stack.Screen name="Add Bookmark" component={AddBookmarkScreen} />
+        {/* Add/Edit Bookmark Screen */}
+        <Stack.Screen name="Add URLs" component={AddBookmarkScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

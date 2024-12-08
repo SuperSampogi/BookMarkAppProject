@@ -4,10 +4,15 @@ import FAB from '../components/FAB';
 import BookmarkCard from '../components/BookmarkCard';
 import { getBookmarks, deleteBookmark } from '../utils/storage';
 
+/**
+ * HomeScreen - Displays the list of bookmarks and provides actions to add, edit, or delete.
+ * @param {Object} navigation - Navigation object for navigating between screens.
+ */
 const HomeScreen = ({ navigation }) => {
     const [bookmarks, setBookmarks] = useState([]);
 
     useEffect(() => {
+        // Load bookmarks when screen is focused
         const loadBookmarks = async () => {
             const storedBookmarks = await getBookmarks();
             setBookmarks(storedBookmarks);
@@ -18,13 +23,10 @@ const HomeScreen = ({ navigation }) => {
     }, [navigation]);
 
     const handleDelete = async (id) => {
+        // Delete bookmark by ID and refresh the list
         await deleteBookmark(id);
         const updatedBookmarks = await getBookmarks();
         setBookmarks(updatedBookmarks);
-    };
-
-    const addNewBookmark = async (newBookmark) => {
-        setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
     };
 
     return (
@@ -34,13 +36,13 @@ const HomeScreen = ({ navigation }) => {
                 renderItem={({ item }) => (
                     <BookmarkCard
                         bookmark={item}
-                        onEdit={(id) => navigation.navigate('Add Bookmark', { bookmarkId: id })}
+                        onEdit={(bookmark) => navigation.navigate('Add URLs', { bookmarkId: bookmark.id })}
                         onDelete={handleDelete}
                     />
                 )}
                 keyExtractor={(item) => item.id}
             />
-            <FAB onPress={() => navigation.navigate('Add Bookmark', { addNewBookmark })} />
+            <FAB onPress={() => navigation.navigate('Add URLs')} />
         </View>
     );
 };

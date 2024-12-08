@@ -2,34 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { saveBookmark, getBookmarkById, updateBookmark } from '../utils/storage';
 
+/**
+ * AddBookmarkScreen - Handles adding or editing a bookmark.
+ * @param {Object} route - Route params for passing bookmark details.
+ * @param {Object} navigation - Navigation object for navigating between screens.
+ */
 const AddBookmarkScreen = ({ route, navigation }) => {
     const [bookmark, setBookmark] = useState({ title: '', url: '' });
 
     useEffect(() => {
+        // Load existing bookmark for editing if `bookmarkId` is passed
         const loadBookmark = async () => {
             if (route.params?.bookmarkId) {
                 const bookmarkData = await getBookmarkById(route.params.bookmarkId);
-                setBookmark(bookmarkData);
+                if (bookmarkData) setBookmark(bookmarkData);
             }
         };
         loadBookmark();
     }, [route.params?.bookmarkId]);
 
     const handleSave = async () => {
+        // Validation for empty fields
         if (!bookmark.title || !bookmark.url) {
             Alert.alert('Error', 'Please fill in both fields.');
             return;
         }
 
-        const newBookmark = { ...bookmark, id: bookmark.id || Date.now().toString() };
+        const updatedBookmark = { ...bookmark, id: bookmark.id || Date.now().toString() };
 
         if (bookmark.id) {
-            await updateBookmark(newBookmark);
+            // Update existing bookmark
+            await updateBookmark(updatedBookmark);
         } else {
-            await saveBookmark(newBookmark);
-            route.params?.addNewBookmark?.(newBookmark); // Update the bookmarks in HomeScreen
+            // Save new bookmark
+            await saveBookmark(updatedBookmark);
         }
 
+        // Go back to Home screen after saving
         navigation.goBack();
     };
 

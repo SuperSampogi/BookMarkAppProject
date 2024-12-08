@@ -1,8 +1,13 @@
-// components/BookmarkCard.js
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { Card, Button } from 'react-native-paper';
+import { StyleSheet, Text } from 'react-native';
 
+/**
+ * BookmarkCard - Displays individual bookmark details.
+ * @param {Object} bookmark - The bookmark object containing title, URL, and ID.
+ * @param {Function} onDelete - Function to handle bookmark deletion.
+ * @param {Function} onEdit - Function to handle bookmark editing.
+ */
 const BookmarkCard = ({ bookmark, onDelete, onEdit }) => {
     return (
         <Card style={styles.card}>
@@ -11,7 +16,7 @@ const BookmarkCard = ({ bookmark, onDelete, onEdit }) => {
                 <Text style={styles.url}>{bookmark.url}</Text>
             </Card.Content>
             <Card.Actions>
-                <Button onPress={onEdit}>Edit</Button>
+                <Button onPress={() => onEdit(bookmark)}>Edit</Button>
                 <Button onPress={() => onDelete(bookmark.id)}>Delete</Button>
             </Card.Actions>
         </Card>

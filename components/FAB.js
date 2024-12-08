@@ -1,7 +1,10 @@
-// components/FAB.js
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
+/**
+ * FAB - Floating Action Button for adding new bookmarks.
+ * @param {Function} onPress - Function to handle button press.
+ */
 const FAB = ({ onPress }) => {
     return (
         <TouchableOpacity style={styles.fab} onPress={onPress}>
